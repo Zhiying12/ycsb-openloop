@@ -102,7 +102,12 @@ DATABASES = {
     "solr7"        : "site.ycsb.db.solr7.SolrClient",
     "tarantool"    : "site.ycsb.db.TarantoolClient",
     "tablestore"   : "site.ycsb.db.tablestore.TableStoreClient",
-    "zookeeper"    : "site.ycsb.db.zookeeper.ZKClient"
+    "zookeeper"    : "site.ycsb.db.zookeeper.ZKClient",
+    "multipaxos"   : "site.ycsb.db.MultipaxosClient",
+    "replicant-go" : "site.ycsb.db.MultipaxosClient",
+    "replicant-c++" : "site.ycsb.db.MultipaxosClient",
+    "replicant-rust" : "site.ycsb.db.MultipaxosClient",
+    "replicant-java" : "site.ycsb.db.MultipaxosClient",
 }
 
 OPTIONS = {
