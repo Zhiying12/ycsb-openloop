@@ -79,4 +79,6 @@ public abstract class OneMeasurement {
       exporter.write(getName(), "Return=" + entry.getKey().getName(), entry.getValue().get());
     }
   }
+
+  public void exportLatencyCDF() {}
 }

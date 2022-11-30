@@ -49,6 +49,9 @@ public class Measurements {
   public static final String MEASUREMENT_TRACK_JVM_PROPERTY = "measurement.trackjvm";
   public static final String MEASUREMENT_TRACK_JVM_PROPERTY_DEFAULT = "false";
 
+  public static final String EXPORTER_CDF = "exportercdf";
+  public static final String EXPORTER_CDF_DEFAULT = "false";
+
   private static Measurements singleton = null;
   private static Properties measurementproperties = null;
 
@@ -256,11 +259,18 @@ public class Measurements {
    * @throws IOException Thrown if the export failed.
    */
   public void exportMeasurements(MeasurementsExporter exporter) throws IOException {
+    boolean isExportCdf = Boolean.parseBoolean(props.getProperty(EXPORTER_CDF, EXPORTER_CDF_DEFAULT));
     for (OneMeasurement measurement : opToMesurementMap.values()) {
       measurement.exportMeasurements(exporter);
+      if (isExportCdf) {
+        measurement.exportLatencyCDF();
+      }
     }
     for (OneMeasurement measurement : opToIntendedMesurementMap.values()) {
       measurement.exportMeasurements(exporter);
+      if (isExportCdf) {
+        measurement.exportLatencyCDF();
+      }
     }
   }
 

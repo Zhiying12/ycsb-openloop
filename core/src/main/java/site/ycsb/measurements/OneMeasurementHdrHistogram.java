@@ -23,10 +23,7 @@ import org.HdrHistogram.HistogramIterationValue;
 import org.HdrHistogram.HistogramLogWriter;
 import org.HdrHistogram.Recorder;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -162,6 +159,26 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
         + ", 99=" + d.format(intervalHistogram.getValueAtPercentile(99)) + ", 99.9="
         + d.format(intervalHistogram.getValueAtPercentile(99.9)) + ", 99.99="
         + d.format(intervalHistogram.getValueAtPercentile(99.99)) + "]";
+  }
+
+  @Override
+  public void exportLatencyCDF() {
+    String fileName = getName() + "-latency-cdf.dat";
+    try {
+      PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
+      List<Double> indexList = new ArrayList<Double>();
+      for (double i = 0.01; i <= 100.0; i += 0.01) {
+        indexList.add(i);
+      }
+      for (Double index : indexList) {
+        Long latency = totalHistogram.getValueAtPercentile(index);
+        printWriter.printf("%f %d\n", index, latency);
+      }
+      printWriter.flush();
+      printWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
   }
 
   private Histogram getIntervalHistogramAndAccumulate() {
