@@ -242,7 +242,7 @@ public final class Client {
       exporter.write("OVERALL", "Throughput(ops/sec)", throughput);
 
       final Map<String, Long[]> gcs = Utils.getGCStatst();
-      long totalGCCount = 0;
+      /*long totalGCCount = 0;
       long totalGCTime = 0;
       for (final Entry<String, Long[]> entry : gcs.entrySet()) {
         exporter.write("TOTAL_GCS_" + entry.getKey(), "Count", entry.getValue()[0]);
@@ -255,7 +255,8 @@ public final class Client {
       exporter.write("TOTAL_GCs", "Count", totalGCCount);
 
       exporter.write("TOTAL_GC_TIME", "Time(ms)", totalGCTime);
-      exporter.write("TOTAL_GC_TIME_%", "Time(%)", ((double) totalGCTime / runtime) * (double) 100);
+      exporter.write("TOTAL_GC_TIME_%", "Time(%)", ((double) totalGCTime / runtime) * (double) 100);*/
+
       if (statusthread != null && statusthread.trackJVMStats()) {
         exporter.write("MAX_MEM_USED", "MBs", statusthread.getMaxUsedMem());
         exporter.write("MIN_MEM_USED", "MBs", statusthread.getMinUsedMem());
@@ -305,7 +306,7 @@ public final class Client {
 
     initWorkload(props, warningthread, workload, tracer);
 
-    System.err.println("Starting test.");
+//    System.err.println("Starting test.");
     final CountDownLatch completeLatch = new CountDownLatch(threadcount);
 
     final List<ClientThread> clients = initDb(dbname, props, threadcount, targetperthreadperms,
@@ -506,13 +507,13 @@ public final class Client {
     try {
       Properties projectProp = new Properties();
       projectProp.load(classLoader.getResourceAsStream("project.properties"));
-      System.err.println("YCSB Client " + projectProp.getProperty("version"));
+//      System.err.println("YCSB Client " + projectProp.getProperty("version"));
     } catch (IOException e) {
       System.err.println("Unable to retrieve client version.");
     }
 
-    System.err.println();
-    System.err.println("Loading workload...");
+//    System.err.println();
+//    System.err.println("Loading workload...");
     try {
       Class workloadclass = classLoader.loadClass(props.getProperty(WORKLOAD_PROPERTY));
 

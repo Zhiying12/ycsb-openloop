@@ -101,11 +101,11 @@ public class DBWrapper extends DB {
         }
       }
 
-      if (LOG_REPORT_CONFIG.compareAndSet(false, true)) {
+      /*if (LOG_REPORT_CONFIG.compareAndSet(false, true)) {
         System.err.println("DBWrapper: report latency for each error is " +
             this.reportLatencyForEachError + " and specific error codes to track" +
             " for latency are: " + this.latencyTrackedErrors.toString());
-      }
+      }*/
     }
   }
 
@@ -119,7 +119,7 @@ public class DBWrapper extends DB {
       long st = System.nanoTime();
       db.cleanup();
       long en = System.nanoTime();
-      measure("CLEANUP", Status.OK, ist, st, en);
+//      measure("CLEANUP", Status.OK, ist, st, en);
     }
   }
 
