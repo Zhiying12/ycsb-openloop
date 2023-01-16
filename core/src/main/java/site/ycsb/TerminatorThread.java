@@ -38,7 +38,7 @@ public class TerminatorThread extends Thread {
     this.threads = threads;
     this.workload = workload;
     waitTimeOutInMS = 2000;
-    System.err.println("Maximum execution time specified as: " + maxExecutionTime + " secs");
+//    System.err.println("Maximum execution time specified as: " + maxExecutionTime + " secs");
   }
 
   public void run() {
@@ -48,9 +48,9 @@ public class TerminatorThread extends Thread {
       System.err.println("Could not wait until max specified time, TerminatorThread interrupted.");
       return;
     }
-    System.err.println("Maximum time elapsed. Requesting stop for the workload.");
+//    System.err.println("Maximum time elapsed. Requesting stop for the workload.");
     workload.requestStop();
-    System.err.println("Stop requested for workload. Now Joining!");
+//    System.err.println("Stop requested for workload. Now Joining!");
     for (Thread t : threads) {
       while (t.isAlive()) {
         try {

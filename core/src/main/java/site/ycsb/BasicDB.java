@@ -32,7 +32,7 @@ public class BasicDB extends DB {
   public static final String COUNT_DEFAULT = "false";
   
   public static final String VERBOSE = "basicdb.verbose";
-  public static final String VERBOSE_DEFAULT = "true";
+  public static final String VERBOSE_DEFAULT = "false";
 
   public static final String SIMULATE_DELAY = "basicdb.simulatedelay";
   public static final String SIMULATE_DELAY_DEFAULT = "0";
