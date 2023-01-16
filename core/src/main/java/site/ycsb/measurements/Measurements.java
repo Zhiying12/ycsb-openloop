@@ -52,6 +52,9 @@ public class Measurements {
   public static final String EXPORTER_CDF = "exportercdf";
   public static final String EXPORTER_CDF_DEFAULT = "false";
 
+  private static final String COMBINE_OP = "combineop";
+  private static final String COMBINE_OP_DEFAULT = "false";
+
   private static Measurements singleton = null;
   private static Properties measurementproperties = null;
 
@@ -73,6 +76,7 @@ public class Measurements {
   private final ConcurrentHashMap<String, OneMeasurement> opToIntendedMesurementMap;
   private final MeasurementType measurementType;
   private final int measurementInterval;
+  private final boolean isCombineOp;
   private final Properties props;
 
   /**
@@ -122,6 +126,8 @@ public class Measurements {
     default:
       throw new IllegalArgumentException("unknown " + MEASUREMENT_INTERVAL + "=" + mIntervalString);
     }
+
+    isCombineOp = Boolean.parseBoolean(props.getProperty(COMBINE_OP, COMBINE_OP_DEFAULT));
   }
 
   private OneMeasurement constructOneMeasurement(String name) {
@@ -187,6 +193,9 @@ public class Measurements {
     if (measurementInterval == 1) {
       return;
     }
+    if (isCombineOp) {
+      operation = "OVERALL";
+    }
     try {
       OneMeasurement m = getOpMeasurement(operation);
       m.measure(latency);
@@ -206,6 +215,9 @@ public class Measurements {
     if (measurementInterval == 0) {
       return;
     }
+    if (isCombineOp) {
+      operation = "OVERALL";
+    }
     try {
       OneMeasurement m = getOpIntendedMeasurement(operation);
       m.measure(latency);
@@ -218,6 +230,9 @@ public class Measurements {
   }
 
   private OneMeasurement getOpMeasurement(String operation) {
+    if (isCombineOp) {
+      operation = "OVERALL";
+    }
     OneMeasurement m = opToMesurementMap.get(operation);
     if (m == null) {
       m = constructOneMeasurement(operation);
@@ -230,6 +245,9 @@ public class Measurements {
   }
 
   private OneMeasurement getOpIntendedMeasurement(String operation) {
+    if (isCombineOp) {
+      operation = "OVERALL";
+    }
     OneMeasurement m = opToIntendedMesurementMap.get(operation);
     if (m == null) {
       final String name = measurementInterval == 1 ? operation : "Intended-" + operation;
@@ -245,7 +263,10 @@ public class Measurements {
   /**
    * Report a return code for a single DB operation.
    */
-  public void reportStatus(final String operation, final Status status) {
+  public void reportStatus(String operation, final Status status) {
+    if (isCombineOp) {
+      operation = "OVERALL";
+    }
     OneMeasurement m = measurementInterval == 1 ?
         getOpIntendedMeasurement(operation) :
         getOpMeasurement(operation);
