@@ -86,7 +86,9 @@ public abstract class ByteIterator implements Iterator<Byte> {
   public String toString() {
     Charset cset = Charset.forName("UTF-8");
     CharBuffer cb = cset.decode(ByteBuffer.wrap(this.toArray()));
-    return cb.toString();
+    String valueStr = cb.toString();
+    valueStr = valueStr.replaceAll(" ", ".");
+    return valueStr;
   }
 
   /** Consumes remaining contents of this object, and returns them as a byte array. */
