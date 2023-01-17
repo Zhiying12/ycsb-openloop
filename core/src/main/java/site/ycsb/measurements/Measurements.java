@@ -17,6 +17,7 @@
 
 package site.ycsb.measurements;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import site.ycsb.Status;
 import site.ycsb.measurements.exporter.MeasurementsExporter;
 
@@ -54,6 +55,12 @@ public class Measurements {
 
   private static final String COMBINE_OP = "combineop";
   private static final String COMBINE_OP_DEFAULT = "false";
+
+  private static final String WARMUP_PROPERTY = "warmup";
+
+  private int warmupDuration;
+  private int numSummaries = 0;
+  private AtomicBoolean warmupActive;
 
   private static Measurements singleton = null;
   private static Properties measurementproperties = null;
@@ -128,6 +135,12 @@ public class Measurements {
     }
 
     isCombineOp = Boolean.parseBoolean(props.getProperty(COMBINE_OP, COMBINE_OP_DEFAULT));
+    warmupActive = new AtomicBoolean(false);
+    warmupDuration = Integer.parseInt(props.getProperty(WARMUP_PROPERTY, "-10"));
+    warmupDuration = warmupDuration / 10;
+    if (warmupDuration > 0) {
+      warmupActive.set(true);
+    }
   }
 
   private OneMeasurement constructOneMeasurement(String name) {
@@ -190,7 +203,7 @@ public class Measurements {
    * value.
    */
   public void measure(String operation, int latency) {
-    if (measurementInterval == 1) {
+    if (measurementInterval == 1 || warmupActive.get()) {
       return;
     }
     if (isCombineOp) {
@@ -212,7 +225,7 @@ public class Measurements {
    * value.
    */
   public void measureIntended(String operation, int latency) {
-    if (measurementInterval == 0) {
+    if (measurementInterval == 0 || warmupActive.get()) {
       return;
     }
     if (isCombineOp) {
@@ -299,6 +312,14 @@ public class Measurements {
    * Return a one line summary of the measurements.
    */
   public synchronized String getSummary() {
+    if (warmupActive.get()) {
+      if (numSummaries <= warmupDuration) {
+        numSummaries += 1;
+      }
+      if (numSummaries > warmupDuration) {
+        warmupActive.set(false);
+      }
+    }
     String ret = "";
     for (OneMeasurement m : opToMesurementMap.values()) {
       ret += m.getSummary() + " ";
@@ -307,6 +328,10 @@ public class Measurements {
       ret += m.getSummary() + " ";
     }
     return ret;
+  }
+
+  public boolean isWarmupFinished() {
+    return !warmupActive.get();
   }
 
 }

@@ -388,9 +388,11 @@ public final class Client {
       System.exit(0);
     }
 
+    long warmupDuration = Long.parseLong(props.getProperty("warmup", "0"));
+    warmupDuration = warmupDuration * 1000;
     try {
       try (final TraceScope span = tracer.newScope(CLIENT_EXPORT_MEASUREMENTS_SPAN)) {
-        exportMeasurements(props, opsDone, en - st);
+        exportMeasurements(props, opsDone, en - st - warmupDuration);
       }
     } catch (IOException e) {
       System.err.println("Could not export measurements, error: " + e.getMessage());

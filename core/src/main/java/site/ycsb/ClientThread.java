@@ -123,7 +123,9 @@ public class ClientThread implements Runnable {
             break;
           }
 
-          opsdone++;
+          if (measurements.isWarmupFinished()) {
+            opsdone++;
+          }
 
           throttleNanos(startTimeNanos);
         }
@@ -136,7 +138,9 @@ public class ClientThread implements Runnable {
             break;
           }
 
-          opsdone++;
+          if (measurements.isWarmupFinished()) {
+            opsdone++;
+          }
 
           throttleNanos(startTimeNanos);
         }
