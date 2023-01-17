@@ -6,7 +6,8 @@ readonly OUTPUT_PATH=scripts/max-throughput-latency/${DB}_${TEST_SETTING}
 readonly TMP_OUTPUT_PATH=${OUTPUT_PATH}/tmp
 mkdir -p $TMP_OUTPUT_PATH
 
-readonly RUN_DURATION=60
+readonly WARMUP_DUARTION=10
+readonly RUN_DURATION=70
 readonly RECORD_COUNT=2000000
 readonly OP_COUNT_PER_CLIENT=3000000
 readonly CLIENTS=(32 64 100 150 200)
@@ -29,6 +30,7 @@ for i in ${!CLIENTS[@]}; do
     -p writeallfields=true \
     -p combineop=true \
     -p measurement.interval=both \
+    -p warmup=10 \
     -threads $client -s | tee $log_path
 
   dat_file=${OUTPUT_PATH}/result.dat
