@@ -2,7 +2,7 @@
 
 readonly DB=$1
 readonly TEST_SETTING=$2
-readonly OUTPUT_PATH=scripts/max-throughput-latency/${DB}_${TEST_SETTING}
+readonly OUTPUT_PATH=scripts/max-throughput-latency/${TEST_SETTING}
 readonly TMP_OUTPUT_PATH=${OUTPUT_PATH}/tmp
 mkdir -p $TMP_OUTPUT_PATH
 
@@ -10,7 +10,7 @@ readonly WARMUP_DUARTION=10
 readonly RUN_DURATION=70
 readonly RECORD_COUNT=2000000
 readonly OP_COUNT_PER_CLIENT=3000000
-readonly CLIENTS=(32 64 100 150 200)
+readonly CLIENTS=(64 100 150 200)
 
 ./bin/ycsb load $DB -P workloads/workloada \
   -p recordcount=$RECORD_COUNT \
@@ -31,8 +31,11 @@ for i in ${!CLIENTS[@]}; do
     -p combineop=true \
     -p measurement.interval=both \
     -p warmup=10 \
+    -p exportercdf=true \
     -threads $client -s | tee $log_path
 
+  mv OVERALL-latency-cdf.dat ${OUTPUT_PATH}/${client}-clients.dat
+  
   dat_file=${OUTPUT_PATH}/result.dat
   if [ ! -f $dat_file ]; then
     echo "Clients Throughput Average 99th Intended-Average Intended-99th" >$dat_file
