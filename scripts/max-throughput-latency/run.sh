@@ -35,6 +35,7 @@ for i in ${!CLIENTS[@]}; do
     -threads $client -s | tee $log_path
 
   mv OVERALL-latency-cdf.dat ${OUTPUT_PATH}/${client}-clients.dat
+  mv OVERALL-distribution.dat ${OUTPUT_PATH}/${client}-clients-distribution.dat
   
   dat_file=${OUTPUT_PATH}/result.dat
   if [ ! -f $dat_file ]; then

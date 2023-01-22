@@ -164,6 +164,7 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
   @Override
   public void exportLatencyCDF() {
     String fileName = getName() + "-latency-cdf.dat";
+    exportCounts();
     try {
       PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
       List<Double> indexList = new ArrayList<Double>();
@@ -173,6 +174,29 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
       for (Double index : indexList) {
         Long latency = totalHistogram.getValueAtPercentile(index);
         printWriter.printf("%f %d\n", index, latency);
+      }
+      printWriter.flush();
+      printWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void exportCounts() {
+    final int bucketCounts = 100;
+    long min = totalHistogram.getMinValue();
+    long max = totalHistogram.getMaxValue();
+    long interval = (max - min) / (bucketCounts - 1);
+
+    try {
+      String fileName = getName() + "-distribution.dat";
+      PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
+      for (long prevValue = min; prevValue <= max; prevValue += interval) {
+        long currentValue = prevValue + interval;
+        long countWithinRange = totalHistogram.getCountBetweenValues(prevValue, currentValue);
+        long countAtRight = totalHistogram.getCountAtValue(currentValue);
+        long index = prevValue + (currentValue - prevValue) / 2;
+        printWriter.printf("%d %d\n", index, countWithinRange - countAtRight);
       }
       printWriter.flush();
       printWriter.close();
