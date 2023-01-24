@@ -63,6 +63,7 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
   private final boolean verbose;
   
   private final List<Double> percentiles;
+  private List<Integer> latencies;
 
   public OneMeasurementHdrHistogram(String name, Properties props) {
     super(name);
@@ -88,6 +89,7 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
       histogramLogWriter.outputLegend();
     }
     histogram = new Recorder(3);
+    latencies = new ArrayList<>();
   }
 
   /**
@@ -96,6 +98,7 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
    */
   public void measure(int latencyInMicros) {
     histogram.recordValue(latencyInMicros);
+    latencies.add(latencyInMicros);
   }
 
   /**
@@ -180,6 +183,7 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
     } catch (IOException e) {
       e.printStackTrace();
     }
+    exportLatency();
   }
 
   public void exportCounts() {
@@ -197,6 +201,20 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
         long countAtRight = totalHistogram.getCountAtValue(currentValue);
         long index = prevValue + (currentValue - prevValue) / 2;
         printWriter.printf("%d %d\n", index, countWithinRange - countAtRight);
+      }
+      printWriter.flush();
+      printWriter.close();
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
+  }
+
+  public void exportLatency() {
+    try {
+      String fileName = getName() + "-all-latency.dat";
+      PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
+      for (int latency : latencies) {
+        printWriter.printf("%d\n", latency);
       }
       printWriter.flush();
       printWriter.close();

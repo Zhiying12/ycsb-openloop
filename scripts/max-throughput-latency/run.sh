@@ -36,6 +36,7 @@ for i in ${!CLIENTS[@]}; do
 
   mv OVERALL-latency-cdf.dat ${OUTPUT_PATH}/${client}-clients.dat
   mv OVERALL-distribution.dat ${OUTPUT_PATH}/${client}-clients-distribution.dat
+  mv OVERALL-all-latency.dat ${OUTPUT_PATH}/${client}-clients-all-latency.dat
   
   dat_file=${OUTPUT_PATH}/result.dat
   if [ ! -f $dat_file ]; then
