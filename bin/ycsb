@@ -108,6 +108,7 @@ DATABASES = {
     "replicant-c++" : "site.ycsb.db.MultipaxosClient",
     "replicant-rust" : "site.ycsb.db.MultipaxosClient",
     "replicant-java" : "site.ycsb.db.MultipaxosClient",
+    "etcd"         : "site.ycsb.db.EtcdClient",
 }
 
 OPTIONS = {

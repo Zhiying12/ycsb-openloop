@@ -204,6 +204,7 @@ LICENSE file.
     <module>voltdb</module>
     <module>zookeeper</module>
     <module>multipaxos</module>
+    <module>etcd</module>
   </modules>
 
   <build>
