@@ -2,15 +2,15 @@
 
 readonly DB=$1
 readonly TEST_SETTING=$2
-readonly OUTPUT_PATH=scripts/max-throughput-latency/${TEST_SETTING}
+readonly OUTPUT_PATH=scripts/throughput-latency/${TEST_SETTING}
 readonly TMP_OUTPUT_PATH=${OUTPUT_PATH}/tmp
 mkdir -p $TMP_OUTPUT_PATH
 
 readonly WARMUP_DUARTION=10
-readonly RUN_DURATION=70
+readonly RUN_DURATION=130
 readonly RECORD_COUNT=2000000
 readonly OP_COUNT_PER_CLIENT=3000000
-readonly CLIENTS=(64 100 150 200)
+readonly CLIENTS=(8 16 32 64 128 192 256)
 
 ./bin/ycsb load $DB -P workloads/workloada \
   -p recordcount=$RECORD_COUNT \
@@ -39,13 +39,11 @@ for i in ${!CLIENTS[@]}; do
   
   dat_file=${OUTPUT_PATH}/result.dat
   if [ ! -f $dat_file ]; then
-    echo "Clients Throughput Average 99th Intended-Average Intended-99th" >$dat_file
+    echo "Clients Throughput Average 99th" >$dat_file
   fi
 
   ops=`awk 'NR==2' ${log_path} | awk -F", " '{print $3}'`
   avg=`awk 'NR==4' ${log_path} | awk -F", " '{print $3}'`
   tail_latency=`awk 'NR==8' ${log_path} | awk -F", " '{print $3}'`
-  intended_avg=`awk 'NR==11' ${log_path} | awk -F", " '{print $3}'`
-  intended_tail=`awk 'NR==15' ${log_path} | awk -F", " '{print $3}'`
-  echo "${client} ${ops} ${avg} ${tail_latency} ${intended_avg} ${intended_tail}" >>$dat_file
+  echo "${client} ${ops} ${avg} ${tail_latency}" >>$dat_file
 done
