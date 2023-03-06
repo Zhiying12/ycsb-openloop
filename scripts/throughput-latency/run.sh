@@ -15,7 +15,7 @@ readonly CLIENTS=(8 16 32 64 128 192 256)
 ./bin/ycsb load $DB -P workloads/workloada \
   -p recordcount=$RECORD_COUNT \
   -p fieldcount=5 \
-  -threads 16 -s
+  -threads 32 -s
 
 for i in ${!CLIENTS[@]}; do
   sleep 10
