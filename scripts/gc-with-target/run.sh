@@ -5,10 +5,9 @@ readonly TEST_SETTING=$5
 readonly CLIENT_COUNT=$2
 readonly RECORD_COUNT=$3
 readonly TARGET_TPUT=$4
-readonly OUTPUT_PATH=scripts/gc/${TEST_SETTING}
+readonly OUTPUT_PATH=scripts/gc-with-target/${TEST_SETTING}
 mkdir -p $OUTPUT_PATH
 
-readonly WARMUP_DUARTION=10
 readonly RUN_DURATION=610
 readonly OPERATION_COUNT=$((CLIENT_COUNT * RECORD_COUNT))
 
@@ -27,8 +26,7 @@ sleep 20
     -p writeallfields=true \
     -p combineop=true \
     -p measurement.interval=both \
-    -p warmup=10 \
     -p exportercdf=true \
-    -p target $TARGET_TPUT \
+    -target $TARGET_TPUT \
     -threads $CLIENT_COUNT -s \
     1>${OUTPUT_PATH}/stat.log 2>${OUTPUT_PATH}/status.log
