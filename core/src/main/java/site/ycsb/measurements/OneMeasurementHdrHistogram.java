@@ -164,7 +164,7 @@ public class OneMeasurementHdrHistogram extends OneMeasurement {
   @Override
   public void exportLatencyCDF() {
     String fileName = getName() + "-latency-cdf.dat";
-    exportCounts();
+//    exportCounts();
     try {
       PrintWriter printWriter = new PrintWriter(new FileWriter(fileName));
       List<Double> indexList = new ArrayList<Double>();

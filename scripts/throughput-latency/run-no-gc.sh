@@ -10,14 +10,14 @@ readonly WARMUP_DUARTION=10
 readonly RUN_DURATION=130
 readonly RECORD_COUNT=2000000
 readonly OP_COUNT_PER_CLIENT=3000000
-readonly CLIENTS=(8 16 32 64 128 192 256)
+readonly CLIENTS=(32 64 128 192 256)
 
-./bin/ycsb load $DB -P workloads/workloada \
+for i in ${!CLIENTS[@]}; do
+  ./bin/ycsb load $DB -P workloads/workloada \
   -p recordcount=$RECORD_COUNT \
   -p fieldcount=5 \
   -threads 32 -s
 
-for i in ${!CLIENTS[@]}; do
   sleep 10
   client=${CLIENTS[$i]}
   target_op_count=$((client * OP_COUNT_PER_CLIENT))
@@ -29,7 +29,6 @@ for i in ${!CLIENTS[@]}; do
     -p fieldcount=5 \
     -p writeallfields=true \
     -p combineop=true \
-    -p measurement.interval=both \
     -p warmup=10 \
     -p exportercdf=true \
     -threads $client -s | tee $log_path
@@ -45,4 +44,5 @@ for i in ${!CLIENTS[@]}; do
   avg=`awk 'NR==4' ${log_path} | awk -F", " '{print $3}'`
   tail_latency=`awk 'NR==8' ${log_path} | awk -F", " '{print $3}'`
   echo "${client} ${ops} ${avg} ${tail_latency}" >>$dat_file
+  sleep 60
 done
