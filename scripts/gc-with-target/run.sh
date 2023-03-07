@@ -31,6 +31,8 @@ sleep 20
     -threads $CLIENT_COUNT -s \
     1>${OUTPUT_PATH}/stat.log 2>${OUTPUT_PATH}/status.log
 
+mv  Intended-OVERALL-latency-cdf.dat ${OUTPUT_PATH}/${client}-clients-intended-latency.dat
+
 echo "Duration Throughput Avg-latency 99th 99.9th Avg-Intended-latency 99th-intended 99.9th-intended" >${OUTPUT_PATH}/status.dat
 sed '1,2d;$d' ${OUTPUT_PATH}/status.log \
     | awk '{printf $3" "$7" "; for(i=8; i<=NF; i++) {if(match($i, /^(Avg=|99=|99.9=)/)){printf $i" "}} print ""}' \
