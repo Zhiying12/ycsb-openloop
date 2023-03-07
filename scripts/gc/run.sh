@@ -35,6 +35,6 @@ mv OVERALL-latency-cdf.dat ${OUTPUT_PATH}/${client}-clients-latency.dat
 echo "Duration Throughput Avg-latency 99th 99.9th" >${OUTPUT_PATH}/status.dat
 sed '1,3d;$d' ${OUTPUT_PATH}/status.log \
     | awk '{printf $3" "$7" "; for(i=8; i<=NF; i++) {if(match($i, /^(Avg=|99=|99.9=)/)){printf $i" "}} print ""}' \
-    | gsed -E "s/,?\s.{2,4}=/ /g" \
-    | gsed -E "s/,//" >> ${OUTPUT_PATH}/status.dat
+    | sed -E "s/,?\s.{2,4}=/ /g" \
+    | sed -E "s/,//" >> ${OUTPUT_PATH}/status.dat
 
