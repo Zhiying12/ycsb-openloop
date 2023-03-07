@@ -8,7 +8,7 @@ readonly TARGET_TPUT=$4
 readonly OUTPUT_PATH=scripts/gc-with-target/${TEST_SETTING}
 mkdir -p $OUTPUT_PATH
 
-readonly RUN_DURATION=610
+readonly RUN_DURATION=600
 readonly OPERATION_COUNT=$((CLIENT_COUNT * RECORD_COUNT))
 
 ./bin/ycsb load $DB -P workloads/workloada \
@@ -30,3 +30,9 @@ sleep 20
     -target $TARGET_TPUT \
     -threads $CLIENT_COUNT -s \
     1>${OUTPUT_PATH}/stat.log 2>${OUTPUT_PATH}/status.log
+
+echo "Duration Throughput Avg-latency 99th 99.9th Avg-Intended-latency 99th-intended 99.9th-intended" >${OUTPUT_PATH}/status.dat
+sed '1,2d;$d' ${OUTPUT_PATH}/status.log \
+    | awk '{printf $3" "$7" "; for(i=8; i<=NF; i++) {if(match($i, /^(Avg=|99=|99.9=)/)){printf $i" "}} print ""}' \
+    | gsed -E "s/,?\s.{2,4}=/ /g" \
+    | gsed -E "s/,//" >> ${OUTPUT_PATH}/status.dat

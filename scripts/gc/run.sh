@@ -25,8 +25,14 @@ sleep 20
     -p fieldcount=5 \
     -p writeallfields=true \
     -p combineop=true \
-    -p measurement.interval=both \
     -p warmup=10 \
     -p exportercdf=true \
     -threads $CLIENT_COUNT -s \
     1>${OUTPUT_PATH}/stat.log 2>${OUTPUT_PATH}/status.log
+
+echo "Duration Throughput Avg-latency 99th 99.9th" >${OUTPUT_PATH}/status.dat
+sed '1,3d;$d' ${OUTPUT_PATH}/status.log \
+    | awk '{printf $3" "$7" "; for(i=8; i<=NF; i++) {if(match($i, /^(Avg=|99=|99.9=)/)){printf $i" "}} print ""}' \
+    | gsed -E "s/,?\s.{2,4}=/ /g" \
+    | gsed -E "s/,//" >> ${OUTPUT_PATH}/status.dat
+
