@@ -116,6 +116,7 @@ public class ClientThread implements Runnable {
     try {
       if (dotransactions) {
         long startTimeNanos = System.nanoTime();
+        boolean isStarted = false;
 
         while (((opcount == 0) || (opsdone < opcount)) && !workload.isStopRequested()) {
 
@@ -123,7 +124,12 @@ public class ClientThread implements Runnable {
             break;
           }
 
-          if (measurements.isWarmupFinished()) {
+          if (!isStarted && measurements.isWarmupFinished()) {
+            isStarted = true;
+            startTimeNanos = System.nanoTime();
+          }
+
+          if (isStarted) {
             opsdone++;
           }
 
