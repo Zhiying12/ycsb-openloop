@@ -25,6 +25,7 @@ sleep 20
     -p fieldcount=5 \
     -p writeallfields=true \
     -p combineop=true \
+    -p warmup=10 \
     -p measurement.interval=both \
     -p exportercdf=true \
     -target $TARGET_TPUT \

@@ -131,9 +131,9 @@ public class ClientThread implements Runnable {
 
           if (isStarted) {
             opsdone++;
+            throttleNanos(startTimeNanos);
           }
 
-          throttleNanos(startTimeNanos);
         }
       } else {
         long startTimeNanos = System.nanoTime();
