@@ -28,4 +28,8 @@ public class Config {
   public List<String> getAllServerAddresses() {
     return serverAddresses;
   }
+
+  public int getServerCounts() {
+    return serverAddresses.size();
+  }
 }

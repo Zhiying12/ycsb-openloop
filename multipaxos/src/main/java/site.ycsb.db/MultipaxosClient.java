@@ -15,6 +15,7 @@ public class MultipaxosClient extends DB {
   private Config config;
   private PrintWriter writer;
   private BufferedReader reader;
+  private int leaderId;
 
   @Override
   public void init() throws DBException {
@@ -27,7 +28,12 @@ public class MultipaxosClient extends DB {
       System.err.println("Couldn't load config.json");
       System.exit(1);
     }
-    String serverAddress = config.getLeaderAddress();
+    leaderId = config.getLeaderId();
+    connect();
+  }
+
+  private void connect() {
+    String serverAddress = config.getServerAddress(leaderId);
     String[] tokens = serverAddress.split(":");
     String ip = tokens[0];
     int port = Integer.parseInt(tokens[1]);
@@ -38,9 +44,7 @@ public class MultipaxosClient extends DB {
         writer = new PrintWriter(socket.getOutputStream(), true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         break;
-      } catch(Exception e){
-        System.out.println(e.getMessage());
-      }
+      } catch(Exception ignored) {}
     }
   }
 
@@ -99,9 +103,12 @@ public class MultipaxosClient extends DB {
 
     String result = reader.readLine();
     if (Objects.equals(result, "retry") ||
-        Objects.equals(result, "leader is ...") ||
         Objects.equals(result, "bad command")) {
       throw new Exception();
+    } else if (request.startsWith("leader is")) {
+      String[] tokens = request.split(" ");
+      leaderId = Integer.parseInt(tokens[2]);
+      connect();
     }
     return result;
   }
