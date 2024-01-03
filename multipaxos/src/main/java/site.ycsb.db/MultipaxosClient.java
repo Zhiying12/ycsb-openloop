@@ -33,6 +33,7 @@ public class MultipaxosClient extends DB {
   }
 
   private void connect() {
+    System.out.println(leaderId);
     String serverAddress = config.getServerAddress(leaderId);
     String[] tokens = serverAddress.split(":");
     String ip = tokens[0];
@@ -118,8 +119,8 @@ public class MultipaxosClient extends DB {
     if (Objects.equals(result, "retry") ||
         Objects.equals(result, "bad command")) {
       throw new Exception();
-    } else if (request.startsWith("leader is")) {
-      String[] tokens = request.split(" ");
+    } else if (result.startsWith("leader is")) {
+      String[] tokens = result.split(" ");
       leaderId = Integer.parseInt(tokens[2]);
       connect();
     }
