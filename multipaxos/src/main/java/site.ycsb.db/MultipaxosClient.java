@@ -45,7 +45,9 @@ public class MultipaxosClient extends DB {
         reader.close();
         socket.close();
       }
-    } catch (IOException ignored) {}
+    } catch (IOException ignored) {
+      //
+    }
 
     while (true) {
       try {
@@ -53,7 +55,9 @@ public class MultipaxosClient extends DB {
         writer = new PrintWriter(socket.getOutputStream(), true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         break;
-      } catch(Exception ignored) {}
+      } catch(Exception ignored) {
+        //
+      }
     }
   }
 
