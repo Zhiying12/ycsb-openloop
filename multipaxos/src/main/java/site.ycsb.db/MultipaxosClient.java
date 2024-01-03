@@ -33,7 +33,6 @@ public class MultipaxosClient extends DB {
   }
 
   private void connect() {
-    System.out.println(leaderId);
     String serverAddress = config.getServerAddress(leaderId);
     String[] tokens = serverAddress.split(":");
     String ip = tokens[0];
