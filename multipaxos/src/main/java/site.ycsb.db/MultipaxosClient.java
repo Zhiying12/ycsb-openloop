@@ -38,6 +38,15 @@ public class MultipaxosClient extends DB {
     String ip = tokens[0];
     int port = Integer.parseInt(tokens[1]);
 
+
+    try {
+      if (socket != null) {
+        writer.close();
+        reader.close();
+        socket.close();
+      }
+    } catch (IOException ignored) {}
+
     while (true) {
       try {
         socket = new Socket(ip, port);
