@@ -1,5 +1,6 @@
 package site.ycsb.db;
 
+import java.net.SocketTimeoutException;
 import org.codehaus.jackson.map.ObjectMapper;
 import site.ycsb.*;
 
@@ -52,6 +53,7 @@ public class MultipaxosClient extends DB {
     while (true) {
       try {
         socket = new Socket(ip, port);
+        socket.setSoTimeout(10000);
         writer = new PrintWriter(socket.getOutputStream(), true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         break;
@@ -114,7 +116,13 @@ public class MultipaxosClient extends DB {
     writer.write(request);
     writer.flush();
 
-    String result = reader.readLine();
+    String result;
+    try {
+      result = reader.readLine();
+    } catch (SocketTimeoutException) {
+      leaderId = (leaderId + 1) % config.getServerCounts();
+      result = "leader is " + leaderId;
+    }
     if (Objects.equals(result, "retry") ||
         Objects.equals(result, "bad command")) {
       throw new Exception();
