@@ -119,7 +119,7 @@ public class MultipaxosClient extends DB {
     String result;
     try {
       result = reader.readLine();
-    } catch (SocketTimeoutException) {
+    } catch (SocketTimeoutException e) {
       leaderId = (leaderId + 1) % config.getServerCounts();
       result = "leader is " + leaderId;
     }
