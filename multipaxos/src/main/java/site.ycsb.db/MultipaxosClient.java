@@ -47,11 +47,11 @@ public class MultipaxosClient extends DB {
       String ip = tokens[0];
       int port = Integer.parseInt(tokens[1]);
       try {
-        Socket socket = new Socket(ip, port);
-        socket.setSoTimeout(2000);
-        writer = new PrintWriter(socket.getOutputStream(), true);
-        reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        sockets.add(socket);
+        Socket s = new Socket(ip, port);
+        s.setSoTimeout(2000);
+        writer = new PrintWriter(s.getOutputStream(), true);
+        reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        sockets.add(s);
         writers.add(writer);
         readers.add(reader);
       } catch(Exception ignored) {
