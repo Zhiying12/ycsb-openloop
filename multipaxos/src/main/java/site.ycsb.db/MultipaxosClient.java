@@ -17,6 +17,9 @@ public class MultipaxosClient extends DB {
   private PrintWriter writer;
   private BufferedReader reader;
   private int leaderId;
+  private List<Socket> sockets;
+  private List<PrintWriter> writers;
+  private List<BufferedReader> readers;
 
   @Override
   public void init() throws DBException {
@@ -30,37 +33,38 @@ public class MultipaxosClient extends DB {
       System.exit(1);
     }
     leaderId = config.getLeaderId();
+    sockets = new ArrayList<>();
+    writers = new ArrayList<>();
+    readers = new ArrayList<>();
     connect();
   }
 
   private void connect() {
-    String serverAddress = config.getServerAddress(leaderId);
-    String[] tokens = serverAddress.split(":");
-    String ip = tokens[0];
-    int port = Integer.parseInt(tokens[1]);
+    List<String> addresses = config.getAllServerAddresses();
 
-
-    try {
-      if (socket != null) {
-        writer.close();
-        reader.close();
-        socket.close();
-      }
-    } catch (IOException ignored) {
-      //
-    }
-
-    while (true) {
+    for (String address : addresses) {
+      String[] tokens = address.split(":");
+      String ip = tokens[0];
+      int port = Integer.parseInt(tokens[1]);
       try {
-        socket = new Socket(ip, port);
-        socket.setSoTimeout(10000);
+        Socket socket = new Socket(ip, port);
+        socket.setSoTimeout(2000);
         writer = new PrintWriter(socket.getOutputStream(), true);
         reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-        break;
+        sockets.add(socket);
+        writers.add(writer);
+        readers.add(reader);
       } catch(Exception ignored) {
         //
       }
     }
+    switchServer();
+  }
+
+  private void switchServer() {
+    socket = sockets.get(leaderId);
+    writer = writers.get(leaderId);
+    reader = readers.get(leaderId);
   }
 
   //Read a single record
@@ -117,11 +121,15 @@ public class MultipaxosClient extends DB {
     writer.flush();
 
     String result;
-    try {
-      result = reader.readLine();
-    } catch (SocketTimeoutException e) {
-      leaderId = (leaderId + 1) % config.getServerCounts();
-      result = "leader is " + leaderId;
+    while (true) {
+      try {
+        result = reader.readLine();
+      } catch (SocketTimeoutException e) {
+        leaderId = (leaderId + 1) % config.getServerCounts();
+        switchServer();
+        continue;
+      }
+      break;
     }
     if (Objects.equals(result, "retry") ||
         Objects.equals(result, "bad command")) {
@@ -129,7 +137,7 @@ public class MultipaxosClient extends DB {
     } else if (result.startsWith("leader is")) {
       String[] tokens = result.split(" ");
       leaderId = Integer.parseInt(tokens[2]);
-      connect();
+      switchServer();
     }
     return result;
   }
