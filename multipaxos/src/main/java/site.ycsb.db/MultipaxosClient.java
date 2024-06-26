@@ -49,11 +49,11 @@ public class MultipaxosClient extends DB {
       try {
         Socket s = new Socket(ip, port);
         s.setSoTimeout(2000);
-        writer = new PrintWriter(s.getOutputStream(), true);
-        reader = new BufferedReader(new InputStreamReader(s.getInputStream()));
+        PrintWriter w = new PrintWriter(s.getOutputStream(), true);
+        BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream()));
         sockets.add(s);
-        writers.add(writer);
-        readers.add(reader);
+        writers.add(w);
+        readers.add(r);
       } catch(Exception ignored) {
         //
       }
@@ -117,11 +117,10 @@ public class MultipaxosClient extends DB {
   }
 
   private String sendRequest(String request) throws Exception {
-    writer.write(request);
-    writer.flush();
-
     String result;
     while (true) {
+      writer.write(request);
+      writer.flush();
       try {
         result = reader.readLine();
       } catch (SocketTimeoutException e) {
