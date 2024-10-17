@@ -60,7 +60,7 @@ public class MultipaxosClient extends DB {
       int port = Integer.parseInt(tokens[1]);
       try {
         Socket s = new Socket(ip, port);
-        s.setSoTimeout(2000);
+        s.setSoTimeout(8000);
         PrintWriter w = new PrintWriter(s.getOutputStream(), true);
         BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream()));
         sockets.add(s);
@@ -184,6 +184,7 @@ public class MultipaxosClient extends DB {
     Entry<Long, Long> entry = queue.poll();
     if (entry == null) {
       System.err.println("no elements in the queue");
+      return;
     }
     long endTimeNanos = System.nanoTime();
     measurements.measure(measurementName,
