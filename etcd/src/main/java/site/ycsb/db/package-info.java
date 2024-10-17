@@ -1,4 +1,0 @@
-/**
- *
- */
-package site.ycsb.db;
