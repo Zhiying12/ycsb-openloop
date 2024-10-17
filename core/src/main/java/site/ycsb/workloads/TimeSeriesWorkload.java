@@ -700,7 +700,7 @@ public class TimeSeriesWorkload extends Workload {
     }
     final Map<String, ByteIterator> tags = new TreeMap<String, ByteIterator>();
     final String key = ((ThreadState)threadstate).nextDataPoint(tags, true);
-    if (db.insert(table, key, tags) == Status.OK) {
+    if (db.insert(table, key, tags, 0, 0) == Status.OK) {
       return true;
     }
     return false;
@@ -776,7 +776,7 @@ public class TimeSeriesWorkload extends Workload {
     }
     
     final Map<String, ByteIterator> cells = new HashMap<String, ByteIterator>();
-    final Status status = db.read(table, keyname, fields, cells);
+    final Status status = db.read(table, keyname, fields, cells, 0, 0);
     
     if (dataintegrity && status == Status.OK) {
       verifyRow(keyname, cells);
@@ -789,7 +789,7 @@ public class TimeSeriesWorkload extends Workload {
     }
     final Map<String, ByteIterator> tags = new TreeMap<String, ByteIterator>();
     final String key = ((ThreadState)threadstate).nextDataPoint(tags, false);
-    db.update(table, key, tags);
+    db.update(table, key, tags, 0, 0);
   }
   
   protected void doTransactionInsert(final DB db, Object threadstate) {
@@ -842,7 +842,7 @@ public class TimeSeriesWorkload extends Workload {
     }
     
     final Vector<HashMap<String, ByteIterator>> results = new Vector<HashMap<String, ByteIterator>>();
-    db.scan(table, keyname, len, fields, results);
+    db.scan(table, keyname, len, fields, results, 0, 0);
   }
   
   protected void doTransactionDelete(final DB db, Object threadstate) {
@@ -883,7 +883,7 @@ public class TimeSeriesWorkload extends Workload {
          .append(timestampKey + tagPairDelimiter + startTimestamp);  
     }
     
-    db.delete(table, buf.toString());
+    db.delete(table, buf.toString(), 0, 0);
   }
   
   /**

@@ -618,7 +618,7 @@ public class CoreWorkload extends Workload {
     Status status;
     int numOfRetries = 0;
     do {
-      status = db.insert(table, dbkey, values);
+      status = db.insert(table, dbkey, values, 0, 0);
       if (null != status && status.isOk()) {
         break;
       }
@@ -739,7 +739,7 @@ public class CoreWorkload extends Workload {
     }
 
     HashMap<String, ByteIterator> cells = new HashMap<String, ByteIterator>();
-    db.read(table, keyname, fields, cells);
+    db.read(table, keyname, fields, cells, 0, 0);
 
     if (dataintegrity) {
       verifyRow(keyname, cells);
@@ -779,9 +779,9 @@ public class CoreWorkload extends Workload {
 
     long ist = measurements.getIntendedStartTimeNs();
     long st = System.nanoTime();
-    db.read(table, keyname, fields, cells);
+    db.read(table, keyname, fields, cells, 0, 0);
 
-    db.update(table, keyname, values);
+    db.update(table, keyname, values, 0, 0);
 
     long en = System.nanoTime();
 
@@ -812,7 +812,7 @@ public class CoreWorkload extends Workload {
       fields.add(fieldname);
     }
 
-    db.scan(table, startkeyname, len, fields, new Vector<HashMap<String, ByteIterator>>());
+    db.scan(table, startkeyname, len, fields, new Vector<HashMap<String, ByteIterator>>(), 0, 0);
   }
 
   public void doTransactionUpdate(DB db) {
@@ -831,7 +831,7 @@ public class CoreWorkload extends Workload {
       values = buildSingleValue(keyname);
     }
 
-    db.update(table, keyname, values);
+    db.update(table, keyname, values, 0, 0);
   }
 
   public void doTransactionInsert(DB db) {
@@ -842,7 +842,7 @@ public class CoreWorkload extends Workload {
       String dbkey = CoreWorkload.buildKeyName(keynum, zeropadding, orderedinserts);
 
       HashMap<String, ByteIterator> values = buildValues(dbkey);
-      db.insert(table, dbkey, values);
+      db.insert(table, dbkey, values, 0, 0);
     } finally {
       transactioninsertkeysequence.acknowledge(keynum);
     }

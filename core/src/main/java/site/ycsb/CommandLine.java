@@ -17,6 +17,7 @@
 
 package site.ycsb;
 
+import site.ycsb.measurements.Measurements;
 import site.ycsb.workloads.CoreWorkload;
 
 import java.io.BufferedReader;
@@ -81,6 +82,8 @@ public final class CommandLine {
 
     //create a DB
     String dbname = props.getProperty(Client.DB_PROPERTY, DEFAULT_DB);
+
+    Measurements.setProperties(props);
 
     ClassLoader classLoader = CommandLine.class.getClassLoader();
 
@@ -245,7 +248,7 @@ public final class CommandLine {
     if (tokens.length != 2) {
       System.out.println("Error: syntax is \"delete keyname\"");
     } else {
-      Status ret = db.delete(table, tokens[1]);
+      Status ret = db.delete(table, tokens[1], 0, 0);
       System.out.println("Return result: " + ret.getName());
     }
   }
@@ -261,7 +264,7 @@ public final class CommandLine {
         values.put(nv[0], new StringByteIterator(nv[1]));
       }
 
-      Status ret = db.insert(table, tokens[1], values);
+      Status ret = db.insert(table, tokens[1], values, 0, 0);
       System.out.println("Result: " + ret.getName());
     }
   }
@@ -277,7 +280,7 @@ public final class CommandLine {
         values.put(nv[0], new StringByteIterator(nv[1]));
       }
 
-      Status ret = db.update(table, tokens[1], values);
+      Status ret = db.update(table, tokens[1], values, 0, 0);
       System.out.println("Result: " + ret.getName());
     }
   }
@@ -295,7 +298,7 @@ public final class CommandLine {
       }
 
       Vector<HashMap<String, ByteIterator>> results = new Vector<>();
-      Status ret = db.scan(table, tokens[1], Integer.parseInt(tokens[2]), fields, results);
+      Status ret = db.scan(table, tokens[1], Integer.parseInt(tokens[2]), fields, results, 0, 0);
       System.out.println("Result: " + ret.getName());
       int record = 0;
       if (results.isEmpty()) {
@@ -326,7 +329,7 @@ public final class CommandLine {
       }
 
       HashMap<String, ByteIterator> result = new HashMap<>();
-      Status ret = db.read(table, tokens[1], fields, result);
+      Status ret = db.read(table, tokens[1], fields, result, 0, 0);
       System.out.println("Return code: " + ret.getName());
       for (Map.Entry<String, ByteIterator> ent : result.entrySet()) {
         System.out.println(ent.getKey() + "=" + ent.getValue());

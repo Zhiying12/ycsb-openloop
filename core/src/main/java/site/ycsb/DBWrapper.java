@@ -134,11 +134,11 @@ public class DBWrapper extends DB {
    * @return The result of the operation.
    */
   public Status read(String table, String key, Set<String> fields,
-                     Map<String, ByteIterator> result) {
+                     Map<String, ByteIterator> result, long ist, long st) {
     try (final TraceScope span = tracer.newScope(scopeStringRead)) {
-      long ist = measurements.getIntendedStartTimeNs();
-      long st = System.nanoTime();
-      Status res = db.read(table, key, fields, result);
+      ist = measurements.getIntendedStartTimeNs();
+      st = System.nanoTime();
+      Status res = db.read(table, key, fields, result, ist, st);
       long en = System.nanoTime();
       measure("READ", res, ist, st, en);
       measurements.reportStatus("READ", res);
@@ -158,11 +158,11 @@ public class DBWrapper extends DB {
    * @return The result of the operation.
    */
   public Status scan(String table, String startkey, int recordcount,
-                     Set<String> fields, Vector<HashMap<String, ByteIterator>> result) {
+                     Set<String> fields, Vector<HashMap<String, ByteIterator>> result, long ist, long st) {
     try (final TraceScope span = tracer.newScope(scopeStringScan)) {
-      long ist = measurements.getIntendedStartTimeNs();
-      long st = System.nanoTime();
-      Status res = db.scan(table, startkey, recordcount, fields, result);
+      ist = measurements.getIntendedStartTimeNs();
+      st = System.nanoTime();
+      Status res = db.scan(table, startkey, recordcount, fields, result, ist, st);
       long en = System.nanoTime();
       measure("SCAN", res, ist, st, en);
       measurements.reportStatus("SCAN", res);
@@ -197,11 +197,11 @@ public class DBWrapper extends DB {
    * @return The result of the operation.
    */
   public Status update(String table, String key,
-                       Map<String, ByteIterator> values) {
+                       Map<String, ByteIterator> values, long ist, long st) {
     try (final TraceScope span = tracer.newScope(scopeStringUpdate)) {
-      long ist = measurements.getIntendedStartTimeNs();
-      long st = System.nanoTime();
-      Status res = db.update(table, key, values);
+      ist = measurements.getIntendedStartTimeNs();
+      st = System.nanoTime();
+      Status res = db.update(table, key, values, ist, st);
       long en = System.nanoTime();
       measure("UPDATE", res, ist, st, en);
       measurements.reportStatus("UPDATE", res);
@@ -220,11 +220,11 @@ public class DBWrapper extends DB {
    * @return The result of the operation.
    */
   public Status insert(String table, String key,
-                       Map<String, ByteIterator> values) {
+                       Map<String, ByteIterator> values, long ist, long st) {
     try (final TraceScope span = tracer.newScope(scopeStringInsert)) {
-      long ist = measurements.getIntendedStartTimeNs();
-      long st = System.nanoTime();
-      Status res = db.insert(table, key, values);
+      ist = measurements.getIntendedStartTimeNs();
+      st = System.nanoTime();
+      Status res = db.insert(table, key, values, ist, st);
       long en = System.nanoTime();
       measure("INSERT", res, ist, st, en);
       measurements.reportStatus("INSERT", res);
@@ -239,11 +239,11 @@ public class DBWrapper extends DB {
    * @param key The record key of the record to delete.
    * @return The result of the operation.
    */
-  public Status delete(String table, String key) {
+  public Status delete(String table, String key, long ist, long st) {
     try (final TraceScope span = tracer.newScope(scopeStringDelete)) {
-      long ist = measurements.getIntendedStartTimeNs();
-      long st = System.nanoTime();
-      Status res = db.delete(table, key);
+      ist = measurements.getIntendedStartTimeNs();
+      st = System.nanoTime();
+      Status res = db.delete(table, key, ist, st);
       long en = System.nanoTime();
       measure("DELETE", res, ist, st, en);
       measurements.reportStatus("DELETE", res);
