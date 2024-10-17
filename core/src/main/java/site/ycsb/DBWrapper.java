@@ -139,9 +139,6 @@ public class DBWrapper extends DB {
       ist = measurements.getIntendedStartTimeNs();
       st = System.nanoTime();
       Status res = db.read(table, key, fields, result, ist, st);
-      long en = System.nanoTime();
-      measure("READ", res, ist, st, en);
-      measurements.reportStatus("READ", res);
       return res;
     }
   }
@@ -163,28 +160,8 @@ public class DBWrapper extends DB {
       ist = measurements.getIntendedStartTimeNs();
       st = System.nanoTime();
       Status res = db.scan(table, startkey, recordcount, fields, result, ist, st);
-      long en = System.nanoTime();
-      measure("SCAN", res, ist, st, en);
-      measurements.reportStatus("SCAN", res);
       return res;
     }
-  }
-
-  private void measure(String op, Status result, long intendedStartTimeNanos,
-                       long startTimeNanos, long endTimeNanos) {
-    String measurementName = op;
-    if (result == null || !result.isOk()) {
-      if (this.reportLatencyForEachError ||
-          this.latencyTrackedErrors.contains(result.getName())) {
-        measurementName = op + "-" + result.getName();
-      } else {
-        measurementName = op + "-FAILED";
-      }
-    }
-    measurements.measure(measurementName,
-        (int) ((endTimeNanos - startTimeNanos) / 1000));
-    measurements.measureIntended(measurementName,
-        (int) ((endTimeNanos - intendedStartTimeNanos) / 1000));
   }
 
   /**
@@ -202,9 +179,6 @@ public class DBWrapper extends DB {
       ist = measurements.getIntendedStartTimeNs();
       st = System.nanoTime();
       Status res = db.update(table, key, values, ist, st);
-      long en = System.nanoTime();
-      measure("UPDATE", res, ist, st, en);
-      measurements.reportStatus("UPDATE", res);
       return res;
     }
   }
@@ -225,9 +199,6 @@ public class DBWrapper extends DB {
       ist = measurements.getIntendedStartTimeNs();
       st = System.nanoTime();
       Status res = db.insert(table, key, values, ist, st);
-      long en = System.nanoTime();
-      measure("INSERT", res, ist, st, en);
-      measurements.reportStatus("INSERT", res);
       return res;
     }
   }
@@ -244,9 +215,6 @@ public class DBWrapper extends DB {
       ist = measurements.getIntendedStartTimeNs();
       st = System.nanoTime();
       Status res = db.delete(table, key, ist, st);
-      long en = System.nanoTime();
-      measure("DELETE", res, ist, st, en);
-      measurements.reportStatus("DELETE", res);
       return res;
     }
   }
