@@ -27,7 +27,6 @@ public class MultipaxosClient extends DB {
   private Measurements measurements;
   private Queue<Entry<Long, Long>> queue;
   private Thread thread;
-  public static final String SHELL = "shell";
 
   @Override
   public void init() throws DBException {
@@ -133,9 +132,9 @@ public class MultipaxosClient extends DB {
   public void cleanup() {
     try {
       for (int i = 0; i < sockets.size(); i++) {
+        sockets.get(i).close();
         readers.get(i).close();
         writers.get(i).close();
-        sockets.get(i).close();
       }
       thread.join();
     } catch (IOException | InterruptedException e) {
