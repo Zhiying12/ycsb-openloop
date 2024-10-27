@@ -1,22 +1,22 @@
 #!/bin/bash
 
 readonly DB=$1
-readonly TEST_SETTING=$5
+readonly TEST_SETTING=$6
 readonly CLIENT_COUNT=$2
 readonly RECORD_COUNT=$3
 readonly TARGET_TPUT=$4
 readonly OUTPUT_PATH=scripts/gc-with-target/${TEST_SETTING}
 mkdir -p $OUTPUT_PATH
 
-readonly RUN_DURATION=600
-readonly OPERATION_COUNT=$((CLIENT_COUNT * RECORD_COUNT))
+readonly RUN_DURATION=$5
+readonly OPERATION_COUNT=$((TARGET_TPUT * RUN_DURATION + TARGET_TPUT))
 
 ./bin/ycsb load $DB -P workloads/workloada \
   -p recordcount=$RECORD_COUNT \
   -p fieldcount=5 \
   -threads 64 -s
 
-sleep 20
+sleep 10
 
 ./bin/ycsb run $DB -P workloads/workloada \
     -p recordcount=$RECORD_COUNT \
@@ -25,15 +25,12 @@ sleep 20
     -p fieldcount=5 \
     -p writeallfields=true \
     -p combineop=true \
-    -p warmup=10 \
-    -p measurement.interval=both \
-    -p exportercdf=true \
     -target $TARGET_TPUT \
     -threads $CLIENT_COUNT -s \
     1>${OUTPUT_PATH}/stat.log 2>${OUTPUT_PATH}/status.log
 
-mv Intended-OVERALL-latency-cdf.dat ${OUTPUT_PATH}/intended-latency.dat
-mv OVERALL-latency-cdf.dat ${OUTPUT_PATH}/latency.dat
+# mv Intended-OVERALL-latency-cdf.dat ${OUTPUT_PATH}/intended-latency.dat
+# mv OVERALL-latency-cdf.dat ${OUTPUT_PATH}/latency.dat
 
 echo "Duration Throughput Avg-latency 99th 99.9th Avg-Intended-latency 99th-intended 99.9th-intended" >${OUTPUT_PATH}/status.dat
 sed '1,2d;$d' ${OUTPUT_PATH}/status.log \

@@ -176,7 +176,7 @@ public class MultipaxosClient extends DB {
   }
 
   private void measure(String result, boolean isOk) {
-    String measurementName = "INSERT";
+    String measurementName = "OVERALL";
     if (result == null || !isOk) {
       measurementName += "-FAILED";
     }
