@@ -131,6 +131,9 @@ public class MultipaxosClient extends DB {
   @Override
   public void cleanup() {
     try {
+      while (!queue.isEmpty()) {
+        Thread.sleep(500);
+      }
       for (int i = 0; i < sockets.size(); i++) {
         sockets.get(i).close();
         readers.get(i).close();
