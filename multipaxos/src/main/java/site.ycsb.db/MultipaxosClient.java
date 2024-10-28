@@ -59,7 +59,7 @@ public class MultipaxosClient extends DB {
       int port = Integer.parseInt(tokens[1]);
       try {
         Socket s = new Socket(ip, port);
-        s.setSoTimeout(8000);
+        s.setSoTimeout(5000);
         PrintWriter w = new PrintWriter(s.getOutputStream(), true);
         BufferedReader r = new BufferedReader(new InputStreamReader(s.getInputStream()));
         sockets.add(s);
@@ -132,7 +132,7 @@ public class MultipaxosClient extends DB {
   public void cleanup() {
     try {
       while (!queue.isEmpty()) {
-        Thread.sleep(500);
+        Thread.sleep(1000);
       }
       for (int i = 0; i < sockets.size(); i++) {
         sockets.get(i).close();
@@ -163,6 +163,7 @@ public class MultipaxosClient extends DB {
       } catch (IOException e) {
         break;
       }
+      long endTimeNanos = System.nanoTime();
 
       isOk = true;
       if (Objects.equals(result, "retry") ||
@@ -174,21 +175,20 @@ public class MultipaxosClient extends DB {
         switchServer();
         isOk = false;
       }
-      measure(result, isOk);
+      measure(result, isOk, endTimeNanos);
     }
   }
 
-  private void measure(String result, boolean isOk) {
+  private void measure(String result, boolean isOk, long endTimeNanos) {
     String measurementName = "OVERALL";
     if (result == null || !isOk) {
       measurementName += "-FAILED";
     }
     Entry<Long, Long> entry = queue.poll();
     if (entry == null) {
-      System.err.println("no elements in the queue");
+//      System.err.println("no elements in the queue");
       return;
     }
-    long endTimeNanos = System.nanoTime();
     measurements.measure(measurementName,
         (int) ((endTimeNanos - entry.getValue()) / 1000));
     measurements.measureIntended(measurementName,
