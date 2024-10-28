@@ -14,6 +14,7 @@ readonly OPERATION_COUNT=$((TARGET_TPUT * RUN_DURATION + TARGET_TPUT))
 ./bin/ycsb load $DB -P workloads/workloada \
   -p recordcount=$RECORD_COUNT \
   -p fieldcount=5 \
+  -target $TARGET_TPUT \
   -threads 64 -s
 
 sleep 10
@@ -31,6 +32,7 @@ sleep 10
 
 # mv Intended-OVERALL-latency-cdf.dat ${OUTPUT_PATH}/intended-latency.dat
 # mv OVERALL-latency-cdf.dat ${OUTPUT_PATH}/latency.dat
+cat ${OUTPUT_PATH}/stat.log
 
 echo "Duration Throughput Avg-latency 99th 99.9th Avg-Intended-latency 99th-intended 99.9th-intended" >${OUTPUT_PATH}/status.dat
 sed '1,2d;$d' ${OUTPUT_PATH}/status.log \
