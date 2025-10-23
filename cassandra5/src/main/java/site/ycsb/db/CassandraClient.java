@@ -1,5 +1,6 @@
 package site.ycsb.db;
 
+import java.time.Duration;
 import site.ycsb.*;
 
 import java.util.*;
@@ -43,7 +44,7 @@ public class CassandraClient extends DB {
 
     String[] hosts = p.getProperty(PROP_HOSTS, "127.0.0.1").split(",");
     int port = Integer.parseInt(p.getProperty(PROP_PORT, "9042").trim());
-    String localDc = p.getProperty(PROP_LOCAL_DC, "datacenter1");
+    String localDc = p.getProperty(PROP_LOCAL_DC, "dc1");
 
     String username = p.getProperty(PROP_USERNAME, "cassandra").trim();
     String password = p.getProperty(PROP_PASSWORD, "cassandra").trim();
@@ -169,7 +170,7 @@ public class CassandraClient extends DB {
         BatchStatement batch = BatchStatement.builder(DefaultBatchType.UNLOGGED).addStatement(b.build()).build();
         session.execute(batch);
       } else {
-        session.execute(b.build());
+        session.executeAsync(b.setTimeout(Duration.ofSeconds(60)).build());
       }
       return Status.OK;
     } catch (Exception e) {
@@ -205,14 +206,22 @@ public class CassandraClient extends DB {
   }
 
   private static void createSchemaIfNeeded(CqlSession session, String keyspace, String table, String replJson) {
-    session.execute("CREATE KEYSPACE IF NOT EXISTS " + CqlIdentifier.fromCql(keyspace).asCql(true)
-        + " WITH replication = " + replJson);
+    final String cql1 = "CREATE KEYSPACE IF NOT EXISTS " + CqlIdentifier.fromCql(keyspace).asCql(true)
+        + " WITH replication = " + replJson;
+    SimpleStatement stmt = SimpleStatement.builder(cql1)
+        .setTimeout(Duration.ofSeconds(60))
+        .build();
+    session.execute(stmt);
 
     StringBuilder cols = new StringBuilder("ycsb_key text PRIMARY KEY");
     for (int i = 0; i < 10; i++) {
       cols.append(", field").append(i).append(" text");
     }
-    session.execute("CREATE TABLE IF NOT EXISTS " + CqlIdentifier.fromCql(keyspace).asCql(true) + "."
-        + CqlIdentifier.fromCql(table).asCql(true) + " (" + cols + ")");
+    final String cql2 = "CREATE TABLE IF NOT EXISTS " + CqlIdentifier.fromCql(keyspace).asCql(true) + "."
+        + CqlIdentifier.fromCql(table).asCql(true) + " (" + cols + ")";
+    SimpleStatement stmt2 = SimpleStatement.builder(cql2)
+        .setTimeout(Duration.ofSeconds(60))
+        .build();
+    session.execute(stmt2);
   }
 }
